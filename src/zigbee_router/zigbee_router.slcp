@@ -26,6 +26,7 @@ component:
 - id: zigbee_counters
 - id: zigbee_debug_print
 - id: zigbee_find_and_bind_target
+- id: zigbee_gp
 - id: zigbee_identify
 - id: zigbee_interpan
 - id: zigbee_network_steering
