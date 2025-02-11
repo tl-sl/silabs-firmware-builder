@@ -63,76 +63,6 @@ static sl_zigbee_af_event_t finding_and_binding_event;
 //---------------
 // Custom CLI Commands
 
-typedef struct {
-    uint8_t major;
-    uint8_t minor;
-    uint16_t patch;
-} gecko_version_t;
-
-gecko_version_t parse_version(uint32_t version){
-   gecko_version_t result;
-
-   result.major = (version >> 24) & 0xFF;
-   result.minor = (version >> 16) & 0xFF;
-   result.patch = version & 0xFFFF;
-
-   return result;
-}
-
-void bootloader_info(sl_cli_command_arg_t *arguments)
-{
-  char version_str[16];
-  BootloaderInformation_t info = { .type = SL_BOOTLOADER, .version = 0L, .capabilities = 0L };
-
-  bootloader_getInfo(&info);
-  printf("%s Bootloader", info.type == SL_BOOTLOADER ? "Gecko" : "Legacy" );
-
-  gecko_version_t ver = parse_version(info.version);
-  snprintf(version_str, sizeof(version_str),
-          "v%u.%02u.%02u", ver.major, ver.minor, ver.patch);
-  printf(" %s\n", version_str);
-
-}
-
-void bootloader_reboot(sl_cli_command_arg_t *arguments)
-{
-  bootloader_rebootAndInstall();
-}
-
-static const sl_cli_command_info_t cmd__btl_info = \
-  SL_CLI_COMMAND(bootloader_info,
-                 "Bootloader info",
-                 "none",
-                 {SL_CLI_ARG_END, });
-
-static const sl_cli_command_info_t cmd__btl_reboot = \
-  SL_CLI_COMMAND(bootloader_reboot,
-                 "Enter bootloader",
-                 "none",
-                 {SL_CLI_ARG_END, });
-
-static const sl_cli_command_entry_t btl_group_table[] = {
-    { "info", &cmd__btl_info, false },
-    { "reboot", &cmd__btl_reboot, false },
-    { NULL, NULL, false },
-};
-
-sl_cli_command_info_t cli_cmd_btl_group = \
-  SL_CLI_COMMAND_GROUP(btl_group_table, "Bootloader commands");
-
-// Create root command table
-const sl_cli_command_entry_t sl_cli_btl_command_table[] = {
-  { "bootloader", &cli_cmd_btl_group, false },
-  { NULL, NULL, false },
-};
-
-sl_cli_command_group_t sl_cli_btl_command_group =
-{
-  { NULL },
-  false,
-  sl_cli_btl_command_table
-};
-
 //---------------
 // Custom helper functions
 static void sync_on_off_cluster(uint8_t endpoint){
@@ -222,7 +152,7 @@ void sl_zigbee_af_main_init_cb(void)
   sl_zigbee_af_event_set_active(&commissioning_led_event);
 
   // Custom bootloader CLI commands
-  sl_cli_command_add_command_group(sl_cli_bootloader_handle, &sl_cli_btl_command_group);
+  // sl_cli_command_add_command_group(sl_cli_bootloader_handle, &sl_cli_btl_command_group);
 }
 
 /** @brief Complete network steering.
